@@ -46,6 +46,13 @@ namespace MagicVilla_VillaAPI.Controllers
             //    return BadRequest(ModelState); //returns validation message in response, commenting as [ApiController] provides same functionality built in 
             //}
 
+            //add  Custom ModelState Validation
+            if (VillaStore.VillaList.FirstOrDefault(x => x.Name.ToLower() == villaDTO.Name.ToLower()) != null)
+            {
+                ModelState.AddModelError("CustomError", "Villa already exists!");
+                return BadRequest(ModelState);
+            }
+
             if (villaDTO == null)
             {
                 return BadRequest(villaDTO);
