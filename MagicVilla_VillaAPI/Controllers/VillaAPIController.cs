@@ -17,7 +17,7 @@ namespace MagicVilla_VillaAPI.Controllers
             return Ok(VillaStore.VillaList);
         } 
         
-        [HttpGet("{id:int}")] //Method expects explicitly "id" parameter of integer type,otherwise swagger won't work
+        [HttpGet("{id:int}", Name = "GetVilla")] //Method expects explicitly "id" parameter of integer type,otherwise swagger won't work
         [ProducesResponseType(StatusCodes.Status200OK)] //Display possible reponse status code on Swagger UI
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,7 +36,7 @@ namespace MagicVilla_VillaAPI.Controllers
         }
         
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)] 
+        [ProducesResponseType(StatusCodes.Status201Created)] 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<VillaDTO> CreateVilla([FromBody]VillaDTO villaDTO)
@@ -52,7 +52,7 @@ namespace MagicVilla_VillaAPI.Controllers
             villaDTO.Id =  VillaStore.VillaList.OrderByDescending( x => x.Id).FirstOrDefault().Id + 1;
             
             VillaStore.VillaList.Add(villaDTO); 
-            return Ok(villaDTO);   
+            return CreatedAtRoute("GetVilla",new {id = villaDTO.Id },villaDTO);   // returns URL/Route of newly created record (see "location" field of response headers on Swagger UI)
         }
     }
 }
