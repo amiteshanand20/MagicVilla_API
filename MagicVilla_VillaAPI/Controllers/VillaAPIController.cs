@@ -11,12 +11,16 @@ namespace MagicVilla_VillaAPI.Controllers
     public class VillaAPIController : ControllerBase
     {
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<VillaDTO>> GetVillas()
         {
             return Ok(VillaStore.VillaList);
         } 
         
         [HttpGet("{id:int}")] //Method expects explicitly "id" parameter of integer type,otherwise swagger won't work
+        [ProducesResponseType(StatusCodes.Status200OK)] //Display possible reponse status code on Swagger UI
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<VillaDTO> GetVilla(int id)
         {
             if (id == 0)
