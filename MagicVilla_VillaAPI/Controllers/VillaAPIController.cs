@@ -66,5 +66,27 @@ namespace MagicVilla_VillaAPI.Controllers
             VillaStore.VillaList.Add(villaDTO); 
             return CreatedAtRoute("GetVilla",new {id = villaDTO.Id },villaDTO);   // returns URL/Route of newly created record (see "location" field of response headers on Swagger UI)
         }
+
+        [HttpDelete("{id:int}", Name = "DeleteVilla")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult DeleteVilla(int id)
+        {
+            if(id == 0)
+            {
+                return BadRequest();
+            }
+
+            var villa = VillaStore.VillaList.FirstOrDefault(x => x.Id == id);
+
+            if (villa == null)
+            {
+                return NotFound();
+            }
+            VillaStore.VillaList.Remove(villa);
+            return NoContent();
+        }
+
     }
 }
