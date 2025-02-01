@@ -1,5 +1,4 @@
 ﻿using MagicVilla_VillaAPI.Data;
-using MagicVilla_VillaAPI.Logger;
 using MagicVilla_VillaAPI.Models;
 using MagicVilla_VillaAPI.Models.Dto;
 using Microsoft.AspNetCore.JsonPatch;
@@ -12,18 +11,15 @@ namespace MagicVilla_VillaAPI.Controllers
     [ApiController]
     public class VillaAPIController : ControllerBase
     {
-        public readonly ILogging _logger;
 
-        public VillaAPIController(ILogging logger)
+        public VillaAPIController()
         {
-            _logger = logger;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<VillaDTO>> GetVillas()
         {
-            _logger.LogInformation("Get all villa details","");
             return Ok(VillaStore.VillaList);
         } 
         
@@ -35,7 +31,6 @@ namespace MagicVilla_VillaAPI.Controllers
         {
             if (id == 0)
             {
-                _logger.LogInformation("Error while fetching villa with Id: " + id,"Error");
                 return BadRequest();
             }
             var villa =  VillaStore.VillaList.FirstOrDefault(x => x.Id == id);
@@ -52,11 +47,6 @@ namespace MagicVilla_VillaAPI.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<VillaDTO> CreateVilla([FromBody]VillaDTO villaDTO)
         {
-            //if(!ModelState.IsValid)
-            //{
-            //    return BadRequest(ModelState); //returns validation message in response, commenting as [ApiController] provides same functionality built in 
-            //}
-
             //add  Custom ModelState Validation
             if (VillaStore.VillaList.FirstOrDefault(x => x.Name.ToLower() == villaDTO.Name.ToLower()) != null)
             {
