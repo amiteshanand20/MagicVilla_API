@@ -2,6 +2,7 @@
 
 using MagicVilla_VillaAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 //builder.Host.UseSerilog();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"))
+    .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)); //ignore bug with dotnet ef migrations,if using new DateTime(),Guid.NewGuid()
 });
 builder.Services.AddControllers().AddNewtonsoftJson();
 
