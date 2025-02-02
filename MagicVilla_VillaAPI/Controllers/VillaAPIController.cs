@@ -3,6 +3,7 @@ using MagicVilla_VillaAPI.Models;
 using MagicVilla_VillaAPI.Models.Dto;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MagicVilla_VillaAPI.Controllers
 {
@@ -11,16 +12,17 @@ namespace MagicVilla_VillaAPI.Controllers
     [ApiController]
     public class VillaAPIController : ControllerBase
     {
-
-        public VillaAPIController()
+        private readonly ApplicationDbContext _db;
+        public VillaAPIController(ApplicationDbContext db)
         {
+            _db = db;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<VillaDTO>> GetVillas()
         {
-            return Ok(VillaStore.VillaList);
+            return Ok(_db.Villas.ToList());
         } 
         
         [HttpGet("{id:int}", Name = "GetVilla")] //Method expects explicitly "id" parameter of integer type,otherwise swagger won't work
@@ -33,7 +35,7 @@ namespace MagicVilla_VillaAPI.Controllers
             {
                 return BadRequest();
             }
-            var villa =  VillaStore.VillaList.FirstOrDefault(x => x.Id == id);
+            var villa =  _db.Villas.FirstOrDefault(x => x.Id == id);
             if (villa == null)
             {
                 return NotFound();
@@ -48,7 +50,7 @@ namespace MagicVilla_VillaAPI.Controllers
         public ActionResult<VillaDTO> CreateVilla([FromBody]VillaDTO villaDTO)
         {
             //add  Custom ModelState Validation
-            if (VillaStore.VillaList.FirstOrDefault(x => x.Name.ToLower() == villaDTO.Name.ToLower()) != null)
+            if (_db.Villas.FirstOrDefault(x => x.Name.ToLower() == villaDTO.Name.ToLower()) != null)
             {
                 ModelState.AddModelError("CustomError", "Villa already exists!");
                 return BadRequest(ModelState);
@@ -62,9 +64,21 @@ namespace MagicVilla_VillaAPI.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-            villaDTO.Id =  VillaStore.VillaList.OrderByDescending( x => x.Id).FirstOrDefault().Id + 1;
-            
-            VillaStore.VillaList.Add(villaDTO); 
+
+            Villa model = new Villa()
+            {
+                Name = villaDTO.Name,
+                Occupancy = villaDTO.Occupancy,
+                Sqft = villaDTO.Sqft,
+                Rate = villaDTO.Rate,
+                ImageUrl = villaDTO.ImageUrl,
+                Amenity = villaDTO.Amenity,
+                Details = villaDTO.Details,
+                Id = villaDTO.Id,
+            };
+
+            _db.Villas.Add(model);
+            _db.SaveChanges();
             return CreatedAtRoute("GetVilla",new {id = villaDTO.Id },villaDTO);   // returns URL/Route of newly created record (see "location" field of response headers on Swagger UI)
         }
 
@@ -79,13 +93,14 @@ namespace MagicVilla_VillaAPI.Controllers
                 return BadRequest();
             }
 
-            var villa = VillaStore.VillaList.FirstOrDefault(x => x.Id == id);
+            var villa = _db.Villas.FirstOrDefault(x => x.Id == id);
 
             if (villa == null)
             {
                 return NotFound();
             }
-            VillaStore.VillaList.Remove(villa);
+            _db.Villas.Remove(villa);
+            _db.SaveChanges();
             return NoContent();
         }
         
@@ -99,11 +114,20 @@ namespace MagicVilla_VillaAPI.Controllers
                 return BadRequest();
             }
 
-            var villa = VillaStore.VillaList.FirstOrDefault(x => x.Id == id);
+            Villa model = new Villa()
+            {
+                Name = villaDTO.Name,
+                Occupancy = villaDTO.Occupancy,
+                Sqft = villaDTO.Sqft,
+                Rate = villaDTO.Rate,
+                ImageUrl = villaDTO.ImageUrl,
+                Amenity = villaDTO.Amenity,
+                Details = villaDTO.Details,
+                Id = villaDTO.Id,
+            };
 
-            villa.Name = villaDTO.Name;
-            villa.Occupancy = villaDTO.Occupancy;
-            villa.Sqft = villaDTO.Sqft;
+            _db.Villas.Update(model);
+            _db.SaveChanges();
             return NoContent();
         }
         
@@ -117,12 +141,40 @@ namespace MagicVilla_VillaAPI.Controllers
                 return BadRequest();
             }
 
-            var villa = VillaStore.VillaList.FirstOrDefault(x => x.Id == id);
-            if(villa == null)
+            var villa = _db.Villas.AsNoTracking().FirstOrDefault(x => x.Id == id); //Use AsNoTracking() so that EFCore doesn't track two entities with same Id, here villa and model
+            VillaDTO villaDTO = new()
+            {
+                Name = villa.Name,
+                Occupancy = villa.Occupancy,
+                Sqft = villa.Sqft,
+                Rate = villa.Rate,
+                ImageUrl = villa.ImageUrl,
+                Amenity = villa.Amenity,
+                Details = villa.Details,
+                Id = villa.Id,
+            };
+
+       
+            if (villa == null)
             {
                 return NotFound();
             }
-            patchDTO.ApplyTo(villa,ModelState);
+            patchDTO.ApplyTo(villaDTO, ModelState);
+
+            Villa model = new Villa()
+            {
+                Name = villaDTO.Name,
+                Occupancy = villaDTO.Occupancy,
+                Sqft = villaDTO.Sqft,
+                Rate = villaDTO.Rate,
+                ImageUrl = villaDTO.ImageUrl,
+                Amenity = villaDTO.Amenity,
+                Details = villaDTO.Details,
+                Id = villaDTO.Id,
+            };
+
+            _db.Villas.Update(model);
+            _db.SaveChanges();
             if (!ModelState.IsValid) 
             { 
                 return BadRequest();
