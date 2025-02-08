@@ -2,6 +2,8 @@
 
 using MagicVilla_VillaAPI;
 using MagicVilla_VillaAPI.Data;
+using MagicVilla_VillaAPI.Repository;
+using MagicVilla_VillaAPI.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -15,7 +17,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>{
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"))
     .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)); //ignore bug with dotnet ef migrations,if using new DateTime(),Guid.NewGuid()
 });
-
+builder.Services.AddScoped<IVillaRepository, VillaRepository>();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 builder.Services.AddControllers().AddNewtonsoftJson();
