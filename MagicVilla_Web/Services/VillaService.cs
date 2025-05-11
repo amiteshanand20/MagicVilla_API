@@ -2,6 +2,7 @@
 using MagicVilla_Web.Models;
 using MagicVilla_Web.Models.Dto;
 using MagicVilla_Web.Services.IServices;
+using Newtonsoft.Json.Linq;
 
 namespace MagicVilla_Web.Services
 {
@@ -14,46 +15,51 @@ namespace MagicVilla_Web.Services
             _httpClient = httpClient;
             villaUrl = configuration.GetValue<string>("ServiceUrls:VillaAPI");
         }
-        public Task<T> CreateAsync<T>(VillaCreateDTO dTO)
+        public Task<T> CreateAsync<T>(VillaCreateDTO dTO, string token)
         {
             return SendAsync<T>(new APIRequest
             {
                 ApiType = SD.ApiType.POST,
                 Url = villaUrl + "/api/VillaAPI",
-                Data = dTO
+                Data = dTO,
+                Token = token
             });
         }
-        public Task<T> DeleteAsync<T>(int id)
+        public Task<T> DeleteAsync<T>(int id, string token)
         {
             return SendAsync<T>(new APIRequest
             {
                 ApiType = SD.ApiType.DELETE,
-                Url = villaUrl + "/api/VillaAPI/" + id
+                Url = villaUrl + "/api/VillaAPI/" + id,
+                Token = token
             });
         }
-        public Task<T> GetAllAsync<T>()
+        public Task<T> GetAllAsync<T>(string token)
         {
             return SendAsync<T>(new APIRequest
             {
                 ApiType = SD.ApiType.GET,
-                Url = villaUrl + "/api/VillaAPI"
+                Url = villaUrl + "/api/VillaAPI",
+                Token = token
             });
         }
-        public async Task<T> GetAsync<T>(int id)
+        public async Task<T> GetAsync<T>(int id, string token)
         {
             return await SendAsync<T>(new APIRequest
             {
                 ApiType = SD.ApiType.GET,
-                Url = villaUrl + "/api/VillaAPI/" + id
+                Url = villaUrl + "/api/VillaAPI/" + id,
+                Token = token
             });
         }
-        public async Task<T> UpdateAsync<T>(VillaUpdateDTO dTO)
+        public async Task<T> UpdateAsync<T>(VillaUpdateDTO dTO, string token)
         {
             return await SendAsync<T>(new APIRequest
             {
                 ApiType = SD.ApiType.PUT,
                 Url = villaUrl + "/api/VillaAPI/" + dTO.Id,
-                Data = dTO
+                Data = dTO,
+                Token = token
             });
         }
     }
