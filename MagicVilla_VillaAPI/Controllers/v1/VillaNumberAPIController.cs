@@ -9,12 +9,11 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace MagicVilla_VillaAPI.Controllers
+namespace MagicVilla_VillaAPI.Controllers.v1
 {
     [Route("api/v{version:apiVersion}/VillaNumberAPI")]
     [ApiController]
     [ApiVersion("1.0")]     
-    [ApiVersion("2.0")]     
     public class VillaNumberAPIController : ControllerBase
     {
         private readonly IVillaNumberRepository _dbVillaNumber;
@@ -26,11 +25,10 @@ namespace MagicVilla_VillaAPI.Controllers
             _dbVillaNumber = dbVillaNumber;
             _dbVilla = dbVilla;
             _mapper = mapper;
-            this._response = new APIResponse();
+            _response = new APIResponse();
         }
 
         [HttpGet]
-        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse>> GetVillaNumbers()
         {
@@ -49,12 +47,7 @@ namespace MagicVilla_VillaAPI.Controllers
             }
         }
 
-        [MapToApiVersion("2.0")]
-        public IEnumerable<string> Get() 
-        {
-            return new string[] { "value1", "value2" };
-        }
-
+       
         [HttpGet("{id:int}", Name = "GetVillaNumber")] //Method expects explicitly "id" parameter of integer type,otherwise swagger won't work
         [ProducesResponseType(StatusCodes.Status200OK)] //Display possible reponse status code on Swagger UI
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -91,7 +84,6 @@ namespace MagicVilla_VillaAPI.Controllers
         }
 
         [HttpPost]
-        [MapToApiVersion("2.0")]
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -136,7 +128,6 @@ namespace MagicVilla_VillaAPI.Controllers
         }
 
         [HttpDelete("{id:int}", Name = "DeleteVillaNumber")]
-        [MapToApiVersion("2.0")]
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
