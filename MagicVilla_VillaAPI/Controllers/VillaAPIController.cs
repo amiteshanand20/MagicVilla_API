@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using MagicVilla_VillaAPI.Data;
 using MagicVilla_VillaAPI.Models;
 using MagicVilla_VillaAPI.Models.Dto;
@@ -12,8 +13,10 @@ using System.Net;
 namespace MagicVilla_VillaAPI.Controllers
 {
     //[Route("api/[controller]")] //If we are using [controller] and controller name changes in future,all the API endpoints of this controller gets changed which might be consumed by others
-    [Route("api/VillaAPI")] //Hardcoding the controller name,doesn't changes the API endpoints even if our controller name changes in future
+    [Route("api/v{version:apiVersion}/VillaAPI")] //Hardcoding the controller name,doesn't changes the API endpoints even if our controller name changes in future
     [ApiController]
+    [ApiVersion("1.0")]
+
     public class VillaAPIController : ControllerBase
     {
         private readonly IVillaRepository _dbVilla;

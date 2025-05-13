@@ -31,9 +31,11 @@ builder.Services.AddApiVersioning(options =>
 {
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0);
+    options.ReportApiVersions = true; //display supported API version in response
 }).AddApiExplorer(options =>
 {
     options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true; //display API version in API url
 });
 
 
