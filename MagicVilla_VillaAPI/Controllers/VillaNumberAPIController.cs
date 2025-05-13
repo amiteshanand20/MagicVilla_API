@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using MagicVilla_VillaAPI.Models;
 using MagicVilla_VillaAPI.Models.Dto;
 using MagicVilla_VillaAPI.Repository.IRepository;
@@ -10,8 +11,10 @@ using System.Net;
 
 namespace MagicVilla_VillaAPI.Controllers
 {
-    [Route("api/VillaNumberAPI")]
+    [Route("api/v{Version:apiVersion}/VillaNumberAPI")]
     [ApiController]
+    [ApiVersion("1.0")]     
+    [ApiVersion("2.0")]     
     public class VillaNumberAPIController : ControllerBase
     {
         private readonly IVillaNumberRepository _dbVillaNumber;
@@ -27,6 +30,7 @@ namespace MagicVilla_VillaAPI.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse>> GetVillaNumbers()
         {
@@ -45,6 +49,11 @@ namespace MagicVilla_VillaAPI.Controllers
             }
         }
 
+        [MapToApiVersion("2.0")]
+        public IEnumerable<string> Get() 
+        {
+            return new string[] { "value1", "value2" };
+        }
 
         [HttpGet("{id:int}", Name = "GetVillaNumber")] //Method expects explicitly "id" parameter of integer type,otherwise swagger won't work
         [ProducesResponseType(StatusCodes.Status200OK)] //Display possible reponse status code on Swagger UI
