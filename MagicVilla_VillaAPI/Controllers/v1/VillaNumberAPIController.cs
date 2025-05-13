@@ -13,7 +13,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
 {
     [Route("api/v{version:apiVersion}/VillaNumberAPI")]
     [ApiController]
-    [ApiVersion("1.0")]     
+    [ApiVersion("1.0",Deprecated = true)]     
     public class VillaNumberAPIController : ControllerBase
     {
         private readonly IVillaNumberRepository _dbVillaNumber;
@@ -47,7 +47,13 @@ namespace MagicVilla_VillaAPI.Controllers.v1
             }
         }
 
-       
+        [HttpGet("GetString")]
+        public IEnumerable<string> Get()
+        {
+            return new string[] { "value1", "value2" };
+        }
+
+
         [HttpGet("{id:int}", Name = "GetVillaNumber")] //Method expects explicitly "id" parameter of integer type,otherwise swagger won't work
         [ProducesResponseType(StatusCodes.Status200OK)] //Display possible reponse status code on Swagger UI
         [ProducesResponseType(StatusCodes.Status404NotFound)]
