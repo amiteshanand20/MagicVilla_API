@@ -61,7 +61,15 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
-builder.Services.AddControllers().AddNewtonsoftJson();
+builder.Services.AddControllers(Options =>
+{
+    //cache profile that can be used for each API using cache profile name
+    Options.CacheProfiles.Add("Default30",
+        new Microsoft.AspNetCore.Mvc.CacheProfile()
+        {
+            Duration = 30
+        });
+}).AddNewtonsoftJson();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
