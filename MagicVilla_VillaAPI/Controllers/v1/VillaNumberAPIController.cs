@@ -36,6 +36,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
             {
                 IEnumerable<VillaNumber> villaNumberList = await _dbVillaNumber.GetAllAsync(includeProperties:"Villa");
                 _response.Result = _mapper.Map<List<VillaNumberDTO>>(villaNumberList);
+                _response.IsSuccess = true;
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
             }
@@ -78,6 +79,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
                     return _response;
                 }
                 _response.Result = _mapper.Map<VillaNumberDTO>(villaNumber);
+                _response.IsSuccess = true;
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
             }
@@ -103,24 +105,28 @@ namespace MagicVilla_VillaAPI.Controllers.v1
                 if (await _dbVillaNumber.GetAsync(x => x.VillaNo == createDTO.VillaNo) != null)
                 {
                     ModelState.AddModelError("ErrorMessages", "Villa Number already exists!");
+                    _response.IsSuccess = false;
                     return BadRequest(ModelState);
                 }
 
                 if(await _dbVilla.GetAsync(x => x.Id == createDTO.VillaID) == null)
                 {
                     ModelState.AddModelError("ErrorMessages", "Villa ID is invalid!");
+                    _response.IsSuccess = false;
                     return BadRequest(ModelState);
                 }
 
                 if (createDTO == null)
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
                 VillaNumber villaNumber = _mapper.Map<VillaNumber>(createDTO);
 
                 await _dbVillaNumber.CreateAsync(villaNumber);
                 _response.Result = _mapper.Map<VillaNumberDTO>(villaNumber);
+                _response.IsSuccess = true;
                 _response.StatusCode = HttpStatusCode.Created;
                 return CreatedAtRoute("GetVilla", new { id = villaNumber.VillaNo }, _response);   // returns URL/Route of newly created record (see "location" field of response headers on Swagger UI)
 
@@ -146,6 +152,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
                 if (id == 0)
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
 
@@ -154,6 +161,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
                 if (villa == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.IsSuccess = false;
                     return NotFound(_response);
                 }
                 await _dbVillaNumber.RemoveAsync(villa);
@@ -182,12 +190,14 @@ namespace MagicVilla_VillaAPI.Controllers.v1
                 if (updateDTO == null || id != updateDTO.VillaNo)
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
 
                 if (await _dbVilla.GetAsync(x => x.Id == updateDTO.VillaID) == null)
                 {
                     ModelState.AddModelError("ErrorMessages", "Villa ID is invalid!");
+                    _response.IsSuccess = false;
                     return BadRequest(ModelState);
                 }
 
