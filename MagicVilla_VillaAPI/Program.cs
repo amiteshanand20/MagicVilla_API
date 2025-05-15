@@ -1,10 +1,10 @@
-//using Serilog;
-
 using MagicVilla_VillaAPI;
 using MagicVilla_VillaAPI.Data;
+using MagicVilla_VillaAPI.Models;
 using MagicVilla_VillaAPI.Repository;
 using MagicVilla_VillaAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +23,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>{
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"))
     .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)); //ignore bug with dotnet ef migrations,if using new DateTime(),Guid.NewGuid()
 });
+
+builder.Services.AddIdentity<ApplicationUser,IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
 //enable caching
 builder.Services.AddResponseCaching();
